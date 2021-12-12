@@ -48,6 +48,7 @@ namespace Tiled
             std::string path = "./res/";
             path += image.erase(0, 3);
             texture = LoadTexture(path.c_str());
+            std::cout << "width " << tileSize.x << " height " << tileSize.y << std::endl; 
             firstgid = _firstgid;
         }
 
@@ -56,7 +57,7 @@ namespace Tiled
             i = i - firstgid;
             int x = (i % columns) * tileSize.x;
             int y = (i / columns) * tileSize.y;
-            DrawTextureRec(texture, {(float)x, (float)y, tileSize.x, tileSize.y}, pos, WHITE);
+            DrawTextureRec(texture, {(float) x, (float) y, tileSize.x, tileSize.y}, pos, WHITE);
         }
 
         ~Tileset()
@@ -175,35 +176,19 @@ namespace Tiled
                     if (layer.data[i] == 0)
                         continue;
 
-                    if (tilesetCount == 1)
-                    {
-                        float x = (i % width) * tilesets[0]->tileSize.x;
-                        float y = (i / width) * tilesets[0]->tileSize.y;
-                        tilesets[0]->Draw(layer.data[i], {x, y});
-                        continue;
-                    }
-
                     int tile = layer.data[i];
-                    int tileset;
-                    for (int t = 0; t < tilesetCount; t++)
+                    
+                    for (auto &tileset : tilesets)
                     {
-                        if (t == tilesetCount - 1)
+                        if (tile >= tileset->firstgid && tile < tileset->firstgid + tileset->tileCount)
                         {
-                            tileset = t;
+                            float x = (i % width) * tileset->tileSize.x;
+                            float y = (i / width) * tileset->tileSize.y;
+                            tileset->Draw(tile, {x, y});
                             break;
                         }
-                        else
-                        {
-                            if (tile >= tilesets[t]->firstgid && tile < tilesets[i + 1]->firstgid)
-                            {
-                                tileset = t;
-                                break;
-                            }
-                        }
                     }
-                    float x = (i % width) * tilesets[tileset]->tileSize.x;
-                    float y = (i / width) * tilesets[tileset]->tileSize.y;
-                    tilesets[tileset]->Draw(layer.data[i], {x, y});
+
                 }
             }
         }
