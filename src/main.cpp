@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <cmath>
 #include "raylib.h"
 
 #include "TileLoader.hpp"
@@ -28,18 +29,7 @@ int main()
 
     // load tile map
     auto tilemap = Tiled::Tilemap("./res/levels/Level1.json");
-    std::cout << "firstgid: " << tilemap.tilesets[0]->firstgid << std::endl;
     std::ifstream file("./res/levels/Level1.json");
-    auto mapData = nlohmann::json::parse(file);
-
-    Tiled::Tileset tileset = Tiled::Tileset("./res/tilesets/Tileset.json", 1);
-
-    int mapWidth = mapData["width"];
-    int mapHeight = mapData["height"];
-
-    std::vector<int> foliage;
-    std::vector<int> platforms;
-    std::vector<int> props;
 
     for (auto &layer : tilemap.objectGroups)
     {
@@ -97,9 +87,9 @@ int main()
         }
 
         // update camera
-        camera.target.x = player->pos.x;
+        camera.target.x = roundf(player->pos.x);
         if (camera.target.x < screenWidth / 2)
-            camera.target.x = screenWidth / 2;
+            camera.target.x = roundf(screenWidth / 2);
 
         // start drawing tiles and objects
         BeginMode2D(camera);
