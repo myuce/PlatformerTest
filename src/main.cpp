@@ -29,7 +29,6 @@ int main()
 
     // load tile map
     auto tilemap = Tiled::Tilemap("./res/levels/Level1.json");
-    std::ifstream file("./res/levels/Level1.json");
 
     for (auto &layer : tilemap.objectGroups)
     {
