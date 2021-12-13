@@ -142,6 +142,7 @@ namespace Tiled
             width = mapData["width"];
             height = mapData["height"];
             tilewidth = mapData["tilewidth"];
+            tileheight = mapData["tileheight"];
             compressionlevel = mapData["compressionlevel"];
             infinite = mapData["infinite"];
 
@@ -182,8 +183,8 @@ namespace Tiled
                     {
                         if (tile >= tileset->firstgid && tile < tileset->firstgid + tileset->tileCount)
                         {
-                            float x = (i % width) * tileset->tileSize.x;
-                            float y = (i / width) * tileset->tileSize.y;
+                            float x = (i % width) * tilewidth;
+                            float y = (i / width) * tileheight;
                             tileset->Draw(tile, {x, y});
                             break;
                         }
