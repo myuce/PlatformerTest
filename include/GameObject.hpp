@@ -94,4 +94,14 @@ public:
         if (debug)
             DrawRectangleRec(rect, color);
     }
+
+    void Delete()
+    {
+        deleted = true;
+    }
+
+    void Delete(GameObject * object)
+    {
+        object->deleted = true;
+    }
 };

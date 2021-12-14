@@ -60,7 +60,7 @@ public:
         if (col.width > col.height && player->pos.y + col.y > pos.y && player->velocity.y >= -250.0f)
         {
             player->velocity.y = -250.0f;
-            deleted = true;
+            Delete();
         }
         else
         {
