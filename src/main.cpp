@@ -1,13 +1,9 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <unordered_map>
 #include <cmath>
 #include "raylib.h"
 
 #include "TileLoader.hpp"
-#include "json.hpp"
-#include <fstream>
 
 #include "Player.hpp"
 #include "Tile.hpp"
