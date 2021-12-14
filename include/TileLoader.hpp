@@ -76,18 +76,20 @@ namespace Tiled
         int y;
         int tileCount;
         std::string name;
-        std::vector<int> data;
+        int *data;
 
         TileLayer(nlohmann::json layer)
         {
             id = layer["id"];
             width = layer["width"];
             height = layer["height"];
+            tileCount = width * height;
             name = layer["name"];
             x = layer["x"];
             y = layer["y"];
-            data = layer["data"].get<std::vector<int>>();
-            tileCount = data.size();
+            data = (int *) malloc(sizeof(int) * tileCount);
+            for (int i = 0; i < tileCount; i++)
+                data[i] = layer["data"][i];
         }
     };
     
