@@ -62,6 +62,7 @@ namespace Tiled
 
         ~Tileset()
         {
+            std::cout << "Deleting tileset" << image << std::endl;
             UnloadTexture(texture);
         }
     };
@@ -90,6 +91,12 @@ namespace Tiled
             data = (int *) malloc(sizeof(int) * tileCount);
             for (int i = 0; i < tileCount; i++)
                 data[i] = layer["data"][i];
+        }
+
+        ~TileLayer()
+        {
+            std::cout << "Deleting tile layer " << id << std::endl;
+            free(data);
         }
     };
     
@@ -134,7 +141,7 @@ namespace Tiled
         Color backgroundcolor = {255, 255, 255, 255};
         
         std::vector<Tileset *> tilesets;
-        std::vector<TileLayer> tileLayers;
+        std::vector<TileLayer *> tileLayers;
         std::vector<ObjectGroup> objectGroups;
 
         Tilemap(const char* mapFile)
@@ -166,7 +173,7 @@ namespace Tiled
                 if (layer["type"] == "objectgroup")
                     objectGroups.push_back(ObjectGroup(layer));
                 else if (layer["type"] == "tilelayer")
-                    tileLayers.push_back(TileLayer(layer));
+                    tileLayers.emplace_back(new TileLayer(layer));
             }
         }
 
@@ -174,12 +181,12 @@ namespace Tiled
         {
             for (auto &layer : tileLayers)
             {
-                for (int i = 0; i < layer.tileCount; i++)
+                for (int i = 0; i < layer->tileCount; i++)
                 {
-                    if (layer.data[i] == 0)
+                    if (layer->data[i] == 0)
                         continue;
 
-                    int tile = layer.data[i];
+                    int tile = layer->data[i];
                     
                     for (auto &tileset : tilesets)
                     {
@@ -198,8 +205,13 @@ namespace Tiled
 
         ~Tilemap()
         {
+            std::cout << "Deleting tilesets" << std::endl;
             for (auto &tileset: tilesets)
                 delete tileset;
+            
+            std::cout << "Deleting tile layers" << std::endl;
+            for (auto &tileLayer: tileLayers)
+                delete tileLayer;
         }
     };
 }
