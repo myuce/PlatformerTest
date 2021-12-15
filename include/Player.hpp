@@ -98,14 +98,18 @@ public:
         // player is on the left side of the tile
         if (col.width < col.height && pos.x < tile->pos.x)
         {
-            velocity.x = 0.0f;
+            if (velocity.x > 0.0f)
+                velocity.x = 0.0f;
+
             pos.x -= col.width;
             rect.x = pos.x;
         }
         // player is on the right side of the tile
         else if (col.width < col.height && pos.x > tile->pos.x)
         {
-            velocity.x = 0.0f;
+            if (velocity.x < 0.0f)
+                velocity.x = 0.0f;
+                
             pos.x += col.width;
             rect.x = pos.x;
         }
