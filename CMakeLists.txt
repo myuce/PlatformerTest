@@ -15,6 +15,15 @@ enable_testing()
 
 add_executable(${PROJECT_NAME}
     "src/main.cpp"
+    
+    # game objects
+    "src/GameObject/Bat.cpp"
+    "src/GameObject/Bug.cpp"
+    "src/GameObject/Coin.cpp"
+    "src/GameObject/Jumper.cpp"
+    "src/GameObject/KillTrigger.cpp"
+    "src/GameObject/Player.cpp"
+    "src/GameObject/Tile.cpp"
 )
 
 target_include_directories(${PROJECT_NAME}

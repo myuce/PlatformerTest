@@ -1,10 +1,10 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <math.h>
+#include <cmath>
+#include <vector>
 #include "raylib.h"
 #include "raymath.h"
-#include "mathextra.hpp"
 
 class GameObject
 {
@@ -15,6 +15,8 @@ public:
     Vector2 size;
     Rectangle rect;
     std::string name;
+    float deltaTime;
+    float gameTime;
     Color color;
     std::vector<GameObject *> objects;
 
@@ -84,7 +86,7 @@ public:
         return CheckCollisionRecs(rect, object->rect);
     }
 
-    void SetObjectList(std::vector<GameObject *> _objects)
+    void SetObjectList(std::vector<GameObject *> &_objects)
     {
         objects = _objects;
     }
