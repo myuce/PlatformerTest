@@ -5,13 +5,14 @@
 
 #include "TileLoader.hpp"
 
-#include "Player.hpp"
-#include "Tile.hpp"
-#include "Coin.hpp"
-#include "Bug.hpp"
-#include "Bat.hpp"
-#include "Jumper.hpp"
-#include "KillTrigger.hpp"
+#include "GameObject/GameObject.hpp"
+#include "GameObject/Player.hpp"
+#include "GameObject/Tile.hpp"
+#include "GameObject/Coin.hpp"
+#include "GameObject/Bug.hpp"
+#include "GameObject/Bat.hpp"
+#include "GameObject/Jumper.hpp"
+#include "GameObject/KillTrigger.hpp"
 
 int main()
 {
@@ -24,9 +25,9 @@ int main()
     std::vector<GameObject *> objects;
 
     // load tile map
-    auto tilemap = Tiled::Tilemap("./res/levels/Level1.json");
+    Tiled::Tilemap *tilemap = new Tiled::Tilemap("./res/levels/Level1.json");
 
-    for (auto &layer : tilemap.objectGroups)
+    for (auto &layer : tilemap->objectGroups)
     {
         for (auto &object : layer.data["objects"])
         {
@@ -63,11 +64,16 @@ int main()
 
     SetTargetFPS(60);
 
+    float deltaTime;
+    float gameTime;
     while (!WindowShouldClose())
     {
+        deltaTime = GetFrameTime();
+        gameTime = GetTime();
         // update objects
         for (auto &object : objects)
         {
+            object->deltaTime = deltaTime;
             object->Update();
         }
 
@@ -88,9 +94,9 @@ int main()
 
         // start drawing tiles and objects
         BeginMode2D(camera);
-        ClearBackground(tilemap.backgroundcolor);
+        ClearBackground(tilemap->backgroundcolor);
 
-        tilemap.Draw();
+        tilemap->Draw();
 
         for (auto &object : objects)
         {
@@ -110,5 +116,9 @@ int main()
 
         EndDrawing();
     }
+
+    // unload tilemap
+    delete tilemap;
+
     return 0;
 }
