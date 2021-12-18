@@ -5,7 +5,7 @@ Bug::Bug(Vector2 _pos = {0.0f, 0.0f}, int _direction = -1)
     pos = _pos;
     size = {18, 18};
     rect = {_pos.x, _pos.y, size.x, size.y};
-    direction = -1;
+    direction = _direction;
 }
 
 void Bug::Start()
