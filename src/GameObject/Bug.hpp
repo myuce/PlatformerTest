@@ -8,7 +8,7 @@ class Bug : public GameObject
 public:
     Player *player;
     int direction = -1;
-    float velocity;
+    float velocity = 0.0f;
     float gravity = 500.0f;
     bool grounded = false;
     std::vector<Tile *> tiles;

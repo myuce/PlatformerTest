@@ -13,7 +13,7 @@ public:
     bool grounded = false;
     std::vector<Tile *> tiles;
 
-    Jumper(Vector2 _pos, int _direction);
+    Jumper(Vector2 _pos, int _direction = -1);
 
     void Start();
     void Update();

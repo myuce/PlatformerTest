@@ -1,6 +1,6 @@
 #include "Bug.hpp"
 
-Bug::Bug(Vector2 _pos = {0.0f, 0.0f}, int _direction)
+Bug::Bug(Vector2 _pos = {0.0f, 0.0f}, int _direction = -1)
 {
     pos = _pos;
     size = {18, 18};

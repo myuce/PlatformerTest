@@ -1,7 +1,7 @@
 #include "Jumper.hpp"
 
 
-Jumper::Jumper(Vector2 _pos, int _direction)
+Jumper::Jumper(Vector2 _pos, int _direction = -1)
 {
     pos = _pos;
     size = {18, 18};
