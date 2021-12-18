@@ -5,7 +5,7 @@ Bat::Bat(Vector2 _pos, int _direction)
     pos = _pos;
     size = {18, 18};
     rect = {_pos.x, _pos.y, size.x, size.y};
-    direction = -1;
+    direction = _direction;
 }
 
 void Bat::Start()
