@@ -48,7 +48,6 @@ namespace Tiled
             std::string path = "./res/";
             path += image.erase(0, 3);
             texture = LoadTexture(path.c_str());
-            std::cout << "width " << tileSize.x << " height " << tileSize.y << std::endl; 
             firstgid = _firstgid;
         }
 
