@@ -80,11 +80,11 @@ public:
     }
 
     template <class T>
-    T* Spawn(float x, float y)
+    T* Spawn(Vector2 pos)
     {
         
         static_assert(std::is_base_of<GameObject, T>::value, "Object must derive from GameObject!");
-        T *newObject = new T();
+        T *newObject = new T(pos);
         newObject->SetObjectList(objects);
         newObject->Start();
         objects->push_back(newObject);
