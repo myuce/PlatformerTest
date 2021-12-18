@@ -18,7 +18,7 @@ public:
     float deltaTime;
     float gameTime;
     Color color;
-    std::vector<GameObject *> objects;
+    std::vector<GameObject *> *objects;
 
     GameObject(){};
     virtual ~GameObject(){};
@@ -26,15 +26,14 @@ public:
     virtual void Start() {}
     virtual void Update() {}
     virtual void DrawExtra() {}
-    virtual void OnCollision(GameObject *object) {}
 
     // returns the first game object with the specified type and name
     template <class T>
     T GetObject(const char *name)
     {
-        for (int i = 0; i < objects.size(); i++)
-            if (objects[i]->name == name && dynamic_cast<T>(objects[i] != nullptr))
-                return dynamic_cast<T>(objects[i]);
+        for (int i = 0; i < objects->size(); i++)
+            if ((*objects)[i]->name == name && dynamic_cast<T>((*objects)[i] != nullptr))
+                return dynamic_cast<T>((*objects)[i]);
         return nullptr;
     }
 
@@ -42,19 +41,19 @@ public:
     template <class T>
     T GetObject()
     {
-        for (int i = 0; i < objects.size(); i++)
-            if (dynamic_cast<T>(objects[i]) != nullptr)
-                return dynamic_cast<T>(objects[i]);
+        for (int i = 0; i < objects->size(); i++)
+            if (dynamic_cast<T>((*objects)[i]) != nullptr)
+                return dynamic_cast<T>((*objects)[i]);
         return nullptr;
     }
 
     // returns the first object with the specified type from a GameObject* vector
     template <class T>
-    static T GetObject(const char *name, std::vector<GameObject *> &objects)
+    static T GetObject(const char *name, std::vector<GameObject *> *objects)
     {
-        for (int i = 0; i < objects.size(); i++)
-            if (objects[i]->name == name)
-                return dynamic_cast<T>(objects[i]);
+        for (int i = 0; i < objects->size(); i++)
+            if ((*objects)[i]->name == name)
+                return dynamic_cast<T>((*objects)[i]);
         return nullptr;
     }
 
@@ -63,9 +62,9 @@ public:
     std::vector<T> GetObjects(const char *name)
     {
         std::vector<T> res;
-        for (int i = 0; i < objects.size(); i++)
-            if (objects[i]->name == name)
-                res.push_back(dynamic_cast<T>(objects[i]));
+        for (int i = 0; i < objects->size(); i++)
+            if ((*objects)[i]->name == name)
+                res.push_back(dynamic_cast<T>((*objects)[i]));
         return res;
     }
 
@@ -74,10 +73,22 @@ public:
     std::vector<T> GetObjects()
     {
         std::vector<T> res;
-        for (int i = 0; i < objects.size(); i++)
-            if (dynamic_cast<T>(objects[i]) != nullptr)
-                res.push_back(dynamic_cast<T>(objects[i]));
+        for (int i = 0; i < objects->size(); i++)
+            if (dynamic_cast<T>((*objects)[i]) != nullptr)
+                res.push_back(dynamic_cast<T>((*objects)[i]));
         return res;
+    }
+
+    template <class T>
+    T* Spawn(float x, float y)
+    {
+        
+        static_assert(std::is_base_of<GameObject, T>::value, "Object must derive from GameObject!");
+        T *newObject = new T();
+        newObject->SetObjectList(objects);
+        newObject->Start();
+        objects->push_back(newObject);
+        return newObject;
     }
 
     template <class T>
@@ -86,7 +97,7 @@ public:
         return CheckCollisionRecs(rect, object->rect);
     }
 
-    void SetObjectList(std::vector<GameObject *> &_objects)
+    void SetObjectList(std::vector<GameObject *> *_objects)
     {
         objects = _objects;
     }
