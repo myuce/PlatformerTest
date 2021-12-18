@@ -11,7 +11,7 @@ public:
     Vector2 originalPos;
     Vector2 tempPos;
 
-    Bat(Vector2 _pos, int _direction = -1);
+    Bat(Vector2 _pos = {0.0f, 0.0f}, int _direction = -1);
 
     void Start();
     void Update();

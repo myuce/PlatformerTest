@@ -1,6 +1,6 @@
 #include "Bat.hpp"
 
-Bat::Bat(Vector2 _pos, int _direction = -1)
+Bat::Bat(Vector2 _pos, int _direction)
 {
     pos = _pos;
     size = {18, 18};
