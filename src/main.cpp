@@ -16,14 +16,14 @@
 
 int main()
 {
-    const int screenWidth = 700;
-    const int screenHeight = 360;
+    const int screenWidth = 960;
+    const int screenHeight = 500;
 
     InitWindow(screenWidth, screenHeight, "Platformer test");
 
     // create objects
-    std::vector<GameObject *> *objects = new std::vector<GameObject *>;
-    objects->reserve(1024);
+    std::vector<GameObject *> objects;
+    objects.reserve(2048);
     // load tile map
     Tiled::Tilemap *tilemap = new Tiled::Tilemap("./res/levels/Level1.json");
 
@@ -32,29 +32,29 @@ int main()
         for (auto &object : layer.data["objects"])
         {
             if (object["name"] == "Player")
-                objects->emplace_back(new Player({object["x"], object["y"]}));
+                objects.emplace_back(new Player({object["x"], object["y"]}));
             else if (object["name"] == "Coin")
-                objects->emplace_back(new Coin({object["x"], object["y"]}));
+                objects.emplace_back(new Coin({object["x"], object["y"]}));
             else if (object["name"] == "Bug")
-                objects->emplace_back(new Bug({object["x"], object["y"]}, -1));
+                objects.emplace_back(new Bug({object["x"], object["y"]}, -1));
             else if (object["name"] == "Jumper")
-                objects->emplace_back(new Jumper({object["x"], object["y"]}, -1));
+                objects.emplace_back(new Jumper({object["x"], object["y"]}, -1));
             else if (object["name"] == "Bat")
-                objects->emplace_back(new Bat({object["x"], object["y"]}, -1));
+                objects.emplace_back(new Bat({object["x"], object["y"]}, -1));
             else if (object["name"] == "KillTrigger")
-                objects->emplace_back(new KillTrigger({object["x"], object["y"]}, {object["width"], object["height"]}));
+                objects.emplace_back(new KillTrigger({object["x"], object["y"]}, {object["width"], object["height"]}));
             else
-                objects->emplace_back(new Tile({object["x"], object["y"]}, {object["width"], object["height"]}));
+                objects.emplace_back(new Tile({object["x"], object["y"]}, {object["width"], object["height"]}));
         }
     }
 
-    for (auto &object : (*objects))
+    for (auto &object : objects)
     {
-        object->SetObjectList(objects);
+        object->SetObjectList(&objects);
         object->Start();
     }
 
-    Player *player = GameObject::GetObject<Player *>("Player", objects);
+    Player *player = GameObject::GetObject<Player *>("Player", &objects);
 
     Camera2D camera = {0};
     camera.target = {screenWidth / 2.0f, screenHeight / 2.0f};
@@ -71,19 +71,21 @@ int main()
         deltaTime = GetFrameTime();
         gameTime = GetTime();
         // update objects
-        for (auto &object : (*objects))
+        for (int i = 0; i < objects.size(); i++)
+        // for (auto &object : (*objects))
         {
-            object->deltaTime = deltaTime;
-            object->Update();
+            objects[i]->deltaTime = deltaTime;
+            objects[i]->gameTime = gameTime;
+            objects[i]->Update();
         }
 
         // delete "deleted" objects
-        for (int i = 0; i < objects->size(); i++)
+        for (int i = 0; i < objects.size(); i++)
         {
-            if ((*objects)[i]->deleted)
+            if (objects[i]->deleted)
             {
-                delete (*objects)[i];
-                objects->erase(objects->begin() + i--);
+                delete objects[i];
+                objects.erase(objects.begin() + i--);
             }
         }
 
@@ -98,9 +100,10 @@ int main()
 
         tilemap->Draw();
 
-        for (auto &object : (*objects))
+        for (auto &object : objects)
         {
             object->UpdateDraw();
+            object->DrawExtra();
         }
 
         EndMode2D();
@@ -108,7 +111,7 @@ int main()
         BeginDrawing();
 
         DrawText(TextFormat("Coins: %i", player->coins), 10, 10, 10, WHITE);
-        DrawText(TextFormat("Total number of objects: %i", objects->size()), 10, 25, 10, WHITE);
+        DrawText(TextFormat("Total number of objects: %i", objects.size()), 10, 25, 10, WHITE);
         DrawText(TextFormat("Grounded: %s", player->grounded ? "true" : "false"), 10, 40, 10, WHITE);
         DrawText(TextFormat("Pos: x: %f y: %f", player->rect.x, player->rect.y), 10, 55, 10, WHITE);
         DrawText(TextFormat("Velocity: x: %f y: %f", player->velocity.x, player->velocity.y), 10, 70, 10, WHITE);
@@ -117,9 +120,12 @@ int main()
         EndDrawing();
     }
 
+    for (int i = 0; i < objects.size(); i++)
+    {
+        delete objects[i];
+        objects.erase(objects.begin() + i--);
+    }
     // unload tilemap
     delete tilemap;
-    delete objects;
-
     return 0;
 }
