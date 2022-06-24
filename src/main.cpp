@@ -13,19 +13,28 @@
 #include "GameObject/Bat.hpp"
 #include "GameObject/Jumper.hpp"
 #include "GameObject/KillTrigger.hpp"
+#include "GameObject/Bomber.hpp"
+#include "GameObject/Goblin.hpp"
+
+#include "imgui.h"
+#include "examples/example_emscripten_opengl3"
+#include "rlImgui/rlImGui.h"
 
 int main()
 {
     const int screenWidth = 960;
-    const int screenHeight = 500;
+    const int screenHeight = 512;
 
     InitWindow(screenWidth, screenHeight, "Platformer test");
+    SetTargetFPS(60);
+
+    rlImGuiSetup(true);
 
     // create objects
     std::vector<GameObject *> objects;
     objects.reserve(2048);
     // load tile map
-    Tiled::Tilemap *tilemap = new Tiled::Tilemap("./res/levels/Level1.json");
+    Tiled::Tilemap *tilemap = new Tiled::Tilemap("./res/levels/Test.json");
 
     for (auto &layer : tilemap->objectGroups)
     {
@@ -43,6 +52,10 @@ int main()
                 objects.emplace_back(new Bat({object["x"], object["y"]}, -1));
             else if (object["name"] == "KillTrigger")
                 objects.emplace_back(new KillTrigger({object["x"], object["y"]}, {object["width"], object["height"]}));
+            else if (object["name"] == "Bomber")
+                objects.emplace_back(new Bomber({object["x"], object["y"]}, object["properties"][0]["value"]));
+            else if (object["name"] == "Goblin")
+                objects.emplace_back(new Goblin({object["x"], object["y"]}));
             else
                 objects.emplace_back(new Tile({object["x"], object["y"]}, {object["width"], object["height"]}));
         }
@@ -56,36 +69,45 @@ int main()
 
     Player *player = GameObject::GetObject<Player *>("Player", &objects);
 
-    Camera2D camera = {0};
+    Camera2D camera;
     camera.target = {screenWidth / 2.0f, screenHeight / 2.0f};
     camera.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
-    SetTargetFPS(60);
-
     float deltaTime;
     float gameTime;
+
+    bool start  = false;
+    bool open = false;
+
     while (!WindowShouldClose())
     {
         deltaTime = GetFrameTime();
         gameTime = GetTime();
-        // update objects
-        for (int i = 0; i < objects.size(); i++)
-        // for (auto &object : (*objects))
-        {
-            objects[i]->deltaTime = deltaTime;
-            objects[i]->gameTime = gameTime;
-            objects[i]->Update();
-        }
 
-        // delete "deleted" objects
-        for (int i = 0; i < objects.size(); i++)
+        if (IsKeyPressed(KEY_P))
+            start = true;
+
+        if (start)
         {
-            if (objects[i]->deleted)
+            // update objects
+            for (int i = 0; i < objects.size(); i++)
+            // for (auto &object : (*objects))
             {
-                delete objects[i];
-                objects.erase(objects.begin() + i--);
+                objects[i]->deltaTime = deltaTime;
+                objects[i]->gameTime = gameTime;
+                objects[i]->Update();
+            }
+
+            // delete "deleted" objects
+            for (int i = 0; i < objects.size(); i++)
+            {
+                if (objects[i]->deleted)
+                {
+                    delete objects[i];
+                    objects.erase(objects.begin() + i--);
+                }
             }
         }
 
@@ -98,6 +120,7 @@ int main()
         BeginMode2D(camera);
         ClearBackground(tilemap->backgroundcolor);
 
+
         tilemap->Draw();
 
         for (auto &object : objects)
@@ -109,16 +132,13 @@ int main()
         EndMode2D();
 
         BeginDrawing();
-
-        DrawText(TextFormat("Coins: %i", player->coins), 10, 10, 10, WHITE);
-        DrawText(TextFormat("Total number of objects: %i", objects.size()), 10, 25, 10, WHITE);
-        DrawText(TextFormat("Grounded: %s", player->grounded ? "true" : "false"), 10, 40, 10, WHITE);
-        DrawText(TextFormat("Pos: x: %f y: %f", player->rect.x, player->rect.y), 10, 55, 10, WHITE);
-        DrawText(TextFormat("Velocity: x: %f y: %f", player->velocity.x, player->velocity.y), 10, 70, 10, WHITE);
-        DrawText(TextFormat("FPS: %i", GetFPS()), 10, 85, 10, WHITE);
-
+        rlImGuiBegin();
+        ImGui::ShowDemoWindow(&open);
+        rlImGuiEnd();	
         EndDrawing();
     }
+
+	rlImGuiShutdown();
 
     for (int i = 0; i < objects.size(); i++)
     {

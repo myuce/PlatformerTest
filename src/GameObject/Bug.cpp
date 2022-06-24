@@ -11,9 +11,10 @@ Bug::Bug(Vector2 _pos, int _direction)
 void Bug::Start()
 {
     name = "Bug";
-    debug = true;
     player = GetObject<Player *>();
     tiles = GetObjects<Tile *>();
+    anim.states["walk"] = SpriteSheet("./res/images/rat/Rat_Run.png", 10.0f, {64, 64} , {23, 30}, {23, 30}, 6);
+    anim.SetState("walk");
     color = BLACK;
 }
 
@@ -75,6 +76,8 @@ void Bug::ResolveTileCollision(Tile *tile)
         pos.x -= col.width;
         pos.x -= 1.0f;
         rect.x = pos.x;
+
+        anim.flipped = true;
     }
     // enemy is on the right side of the tile
     else if (col.width <= col.height && pos.x > tile->pos.x)
@@ -84,6 +87,8 @@ void Bug::ResolveTileCollision(Tile *tile)
         pos.x += col.width;
         pos.x += 1.0f;
         rect.x = pos.x;
+
+        anim.flipped = false;
     }
 
     // enemy is above the tile

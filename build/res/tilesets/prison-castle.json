@@ -1,0 +1,14 @@
+{ "columns":9,
+ "image":"..\/images\/castle-prison\/Assets.png",
+ "imageheight":320,
+ "imagewidth":144,
+ "margin":0,
+ "name":"Castle",
+ "spacing":0,
+ "tilecount":180,
+ "tiledversion":"1.7.2",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.6"
+}

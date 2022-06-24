@@ -5,6 +5,7 @@
 #include <vector>
 #include "raylib.h"
 #include "raymath.h"
+#include "Animation/Animation.hpp"
 
 class GameObject
 {
@@ -18,10 +19,17 @@ public:
     float deltaTime;
     float gameTime;
     Color color;
+    Animation anim;
     std::vector<GameObject *> *objects;
 
     GameObject(){};
-    virtual ~GameObject(){};
+    virtual ~GameObject()
+    {
+        for (auto &sprite: anim.states)
+        {
+            UnloadTexture(anim.states[sprite.first].texture);
+        }
+    };
 
     virtual void Start() {}
     virtual void Update() {}
@@ -55,6 +63,17 @@ public:
             if ((*objects)[i]->name == name)
                 return dynamic_cast<T>((*objects)[i]);
         return nullptr;
+    }
+
+    // returns a GameObject* vector of objects with the specified name
+    template <class T>
+    static std::vector<T> GetObjects(const char *name, std::vector<GameObject *> *objects)
+    {
+        std::vector<T> res;
+        for (int i = 0; i < objects->size(); i++)
+            if ((*objects)[i]->name == name)
+                res.push_back(dynamic_cast<T>((*objects)[i]));
+        return res;
     }
 
     // returns a GameObject* vector of objects with the specified name
@@ -106,6 +125,9 @@ public:
     {
         if (debug)
             DrawRectangleRec(rect, color);
+
+        if (anim.states.size() != 0)
+            anim.Draw(pos);
     }
 
     void Delete()
